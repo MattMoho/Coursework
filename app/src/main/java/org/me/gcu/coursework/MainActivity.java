@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
         rawDataDisplay = (TextView)findViewById(R.id.rawDataDisplay);
         startButton = (Button)findViewById(R.id.startButton);
         startButton.setOnClickListener(this);
+        wList = new LinkedList<WeatherData>();
+
 
         // More Code goes here
     }
@@ -64,14 +66,12 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
             xpp.setInput(new StringReader(dataToParse));
             int eventType = xpp.getEventType();
             while (eventType != XmlPullParser.END_DOCUMENT) {
-                if(eventType == XmlPullParser.START_DOCUMENT) {
-                    System.out.println("Start document");}
-                else if (eventType == XmlPullParser.START_TAG) // Found a start tag
+                 if (eventType == XmlPullParser.START_TAG) // Found a start tag
                 {   // Check which start Tag we have as we'd do different things
 
                     if (xpp.getName().equalsIgnoreCase("item")) {
                         aWeatherData = new WeatherData();
-                        Log.d("MyTag", "New channel found!");
+                        Log.d("MyTag", "New item found!");
                     } else if (xpp.getName().equalsIgnoreCase("title")) {
                         String temp = xpp.nextText();
                         Log.d("MyTag", "Title is " + temp);
