@@ -64,7 +64,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
             xpp.setInput(new StringReader(dataToParse));
             int eventType = xpp.getEventType();
             while (eventType != XmlPullParser.END_DOCUMENT) {
-                if (eventType == XmlPullParser.START_TAG) // Found a start tag
+                if(eventType == XmlPullParser.START_DOCUMENT) {
+                    System.out.println("Start document");}
+                else if (eventType == XmlPullParser.START_TAG) // Found a start tag
                 {   // Check which start Tag we have as we'd do different things
 
                     if (xpp.getName().equalsIgnoreCase("item")) {
@@ -89,9 +91,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
                         aWeatherData.setPubDate(temp);
                     } else if (eventType == XmlPullParser.END_TAG) // Found an end tag
                     {
-                        if (xpp.getName().equalsIgnoreCase("Thing")) {
+                        if (xpp.getName().equalsIgnoreCase("item")) {
                             Log.d("MyTag", "Thing parsing completed!");
-
+                            wList.add(aWeatherData);
                         }
                     }
                     eventType = xpp.next(); // Get the next event  before looping again
