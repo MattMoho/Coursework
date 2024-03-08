@@ -55,7 +55,57 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
         // More Code goes here
     }
 
-    public void onClick(View aview)
+    private void parseData(String dataToParse) {
+        WeatherData aWeatherData = null;
+        try {
+            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+            factory.setNamespaceAware(true);
+            XmlPullParser xpp = factory.newPullParser();
+            xpp.setInput(new StringReader(dataToParse));
+            int eventType = xpp.getEventType();
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType == XmlPullParser.START_TAG) // Found a start tag
+                {   // Check which start Tag we have as we'd do different things
+
+                    if (xpp.getName().equalsIgnoreCase("item")) {
+                        aWeatherData = new WeatherData();
+                        Log.d("MyTag", "New channel found!");
+                    } else if (xpp.getName().equalsIgnoreCase("title")) {
+                        String temp = xpp.nextText();
+                        Log.d("MyTag", "Title is " + temp);
+                        aWeatherData.setTitle(temp);
+                    } else if (xpp.getName().equalsIgnoreCase("description")) {
+                        String temp = xpp.nextText();
+                        Log.d("MyTag", "Description is " + temp);
+                        aWeatherData.setDescription(temp);
+
+                    } else if (xpp.getName().equalsIgnoreCase("link")) {
+                        String temp = xpp.nextText();
+                        Log.d("MyTag", "Link is " + temp);
+                        aWeatherData.setLink(temp);
+                    } else if (xpp.getName().equalsIgnoreCase("pubDate")) {
+                        String temp = xpp.nextText();
+                        Log.d("MyTag", "pubDate is " + temp);
+                        aWeatherData.setPubDate(temp);
+                    } else if (eventType == XmlPullParser.END_TAG) // Found an end tag
+                    {
+                        if (xpp.getName().equalsIgnoreCase("Thing")) {
+                            Log.d("MyTag", "Thing parsing completed!");
+
+                        }
+                    }
+                    eventType = xpp.next(); // Get the next event  before looping again
+                } // End of while
+            }
+
+            Log.d("MyTag", "End of document reached");
+        } catch (XmlPullParserException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+        public void onClick(View aview)
     {
         startProgress();
     }
@@ -77,59 +127,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
         {
             url = aurl;
         }
-        private void parseData(String dataToParse)
-        {
-            WeatherData aWeatherData = null;
-            try
-            {
-                XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-                factory.setNamespaceAware(true);
-                XmlPullParser xpp = factory.newPullParser();
-                xpp.setInput( new StringReader( dataToParse ) );
-                int eventType = xpp.getEventType();
-                while (eventType != XmlPullParser.END_DOCUMENT)
-                {
-                    if(eventType == XmlPullParser.START_TAG) // Found a start tag
-                    {   // Check which start Tag we have as we'd do different things
 
-                        if(xpp.getName().equalsIgnoreCase("channel"))
-                        {
-                            aWeatherData = new WeatherData();
-                            Log.d("MyTag", "New channel found!");
-                        }
-                        else if(xpp.getName().equalsIgnoreCase("title")){
-                            String temp = xpp.nextText();
-                            Log.d("MyTag", "Title is "+ temp);
-                            aWeatherData.setTitle(temp);
-                        }
-                        else if(xpp.getName().equalsIgnoreCase("description")){
-                            String temp = xpp.nextText();
-                            Log.d("MyTag", "Description is "+ temp);
-                            aWeatherData.setDescription(temp);
-
-                    }
-                    else if(eventType == XmlPullParser.END_TAG) // Found an end tag
-                    {
-                        if (xpp.getName().equalsIgnoreCase("Thing"))
-                        {
-                            Log.d("MyTag","Thing parsing completed!");
-
-                        }
-                    }
-                    eventType = xpp.next(); // Get the next event  before looping again
-                } // End of while
-            }
-            catch (XmlPullParserException ae1)
-            {
-                Log.e("MyTag","Parsing error" + ae1.toString());
-            }
-            catch (IOException ae1)
-            {
-                Log.e("MyTag","IO error during parsing");
-            }
-
-            Log.d("MyTag","End of document reached");
-        }
         @Override
         public void run()
         {
